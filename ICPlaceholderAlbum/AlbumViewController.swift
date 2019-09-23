@@ -43,6 +43,7 @@ class AlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = .white
         setCollectionView()
         setLoadingView()
         triggerToFetchData()
@@ -77,9 +78,27 @@ class AlbumViewController: UIViewController {
 }
 
 extension AlbumViewController: AlbumViewModelDelegate {
+    func viewModel(_ viewModel: AlbumViewModel, didReceiveError error: Error) {
+//        self.loadingView.stopAnimating()
+        self.showAlertMessage(with: "Failed To Fetch JSON Data.")
+    }
+    
     func viewModel(_ viewModel: AlbumViewModel, didUpdateAlbumPageData data: [PhotoContent]) {
         collectionView.reloadData()
         self.loadingView.stopAnimating()
+    }
+    
+    func showAlertMessage(with message: String) {
+        let alert: UIAlertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let retry: UIAlertAction = UIAlertAction(title: "Retry", style: .default) { [weak self] (_) in
+            self?.triggerToFetchData()
+        }
+        let cancel: UIAlertAction = UIAlertAction(title: "cancel", style: .default) { [weak self] (_) in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        alert.addAction(retry)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
     }
 }
 

@@ -15,17 +15,18 @@ class DataManager {
 
 extension DataManager {
     
-    func getAlbumJSON(_ completion: @escaping ([PhotoContent]) -> Void) {
+    func getAlbumJSON(_ completion: @escaping ([PhotoContent]?, Error?) -> Void) {
         guard let url: URL = URL(string: apiUrlString) else { return }
         let task = URLSession.shared.dataTask(with: url) { (jsonData, response, error) in
             let decoder = JSONDecoder()
             if let jsonData = jsonData, let apiResponse = try? decoder.decode([PhotoContent].self, from: jsonData) {
                 DispatchQueue.main.sync {
-                    completion(apiResponse)
+                    completion(apiResponse, nil)
                 }
             } else {
-                assertionFailure("API fetching failed.")
-                
+                DispatchQueue.main.sync {
+                    completion(nil, error)
+                }
             }
         }
         task.resume()

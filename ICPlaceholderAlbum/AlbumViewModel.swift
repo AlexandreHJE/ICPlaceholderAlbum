@@ -12,6 +12,8 @@ protocol AlbumViewModelDelegate {
     
     func viewModel(_ viewModel: AlbumViewModel, didUpdateAlbumPageData data: [PhotoContent])
     
+    func viewModel(_ viewModel: AlbumViewModel, didReceiveError error: Error)
+    
 }
 
 class AlbumViewModel {
@@ -24,13 +26,21 @@ class AlbumViewModel {
         }
     }
     
+    private(set) var connectionError = Error.self {
+        didSet {
+            delegate?.viewModel(self, didReceiveError: connectionError as! Error)
+        }
+    }
+    
+    
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSON"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSONError"), object: nil)
     }
     
     @objc
     func processingDataToArray(_ notification: Notification) {
-        print("selector")
         if let userInfo = notification.userInfo {
             if let contents = userInfo["PhotoContents"] as? [PhotoContent] {
                 
@@ -45,9 +55,24 @@ class AlbumViewModel {
         }
     }
     
+    @objc
+    func failedToGetJSON(_ notification: Notification) {
+        if let userInfo = notification.userInfo {
+            if let error = userInfo["ConnectionError"] as? Error {
+                self.connectionError = error as! Error.Protocol
+            }
+        }
+    }
+    
     func getData() {
-        DataManager.shared.getAlbumJSON { (contents) in
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSON"), object: self, userInfo: ["PhotoContents": contents])
+        DataManager.shared.getAlbumJSON { (contents, error) in
+            if let contents: [PhotoContent] = contents {
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSON"), object: self, userInfo: ["PhotoContents": contents])
+            } else {
+                if let error: Error = error {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSONError"), object: self, userInfo: ["ConnectionError": error])
+                }
+            }
         }
     }
 
