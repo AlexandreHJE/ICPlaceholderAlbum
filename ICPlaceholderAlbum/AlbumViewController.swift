@@ -89,6 +89,7 @@ extension AlbumViewController: AlbumViewModelDelegate {
     }
     
     func showAlertMessage(with message: String) {
+        
         let alert: UIAlertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
         let retry: UIAlertAction = UIAlertAction(title: "Retry", style: .default) { [weak self] (_) in
             self?.triggerToFetchData()

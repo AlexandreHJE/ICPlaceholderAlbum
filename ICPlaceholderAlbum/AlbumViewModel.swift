@@ -49,7 +49,6 @@ class AlbumViewModel {
                 for v in contents {
                     temps.append(v)
                 }
-                
                 self.photoContents = temps
             }
         }

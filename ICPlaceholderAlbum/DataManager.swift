@@ -37,7 +37,5 @@ extension DataManager {
         let session: URLSession = URLSession(configuration: .default)
         return session.dataTask(with: url, completionHandler: completionHandler)
     }
-    
-    
 }
 
