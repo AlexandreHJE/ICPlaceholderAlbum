@@ -18,10 +18,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let rootViewController: UIViewController = HomePageViewController()
         let navigationViewController: UINavigationController = UINavigationController(rootViewController: rootViewController)
-        let firstWindow: UIWindow = UIWindow()
-        firstWindow.rootViewController = navigationViewController
-        firstWindow.makeKeyAndVisible()
-        window = firstWindow
+        window?.rootViewController = navigationViewController
+        //Question: 這些會造成Memoryleak.
+//        let firstWindow: UIWindow = UIWindow()
+//        firstWindow.rootViewController = navigationViewController
+//        firstWindow.makeKeyAndVisible()
+//        window = firstWindow
         
         return true
     }
