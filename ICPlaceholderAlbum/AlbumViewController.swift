@@ -60,32 +60,53 @@ class AlbumViewController: UIViewController {
     
     func setLoadingView() {
         self.view.addSubview(loadingView)
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
         self.loadingView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
         self.loadingView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         self.loadingView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
         self.loadingView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
         loadingView.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
         loadingView.style = .whiteLarge
-        loadingView.hidesWhenStopped = false
+        loadingView.hidesWhenStopped = true
     }
     
     func triggerToFetchData() {
         loadingView.startAnimating()
-        self.viewModel.getData()
-        self.viewModel.delegate = self
+        defer {
+            DispatchQueue.main.async {
+                self.loadingView.stopAnimating()
+            }
+        }
+        self.viewModel.getData { [weak self] (result) in
+            switch result {
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.showAlertMessage(with: error.localizedDescription)
+                }
+            case .success( _):
+                DispatchQueue.main.async {
+                    self?.collectionView.reloadData()
+                }
+            }
+        }
+//        self.viewModel.delegate = self
     }
     
 }
 
 extension AlbumViewController: AlbumViewModelDelegate {
     func viewModel(_ viewModel: AlbumViewModel, didReceiveError error: Error) {
-//        self.loadingView.stopAnimating()
-        self.showAlertMessage(with: "Failed To Fetch JSON Data.")
+        DispatchQueue.main.async {
+            self.loadingView.stopAnimating()
+            self.showAlertMessage(with: "Failed To Fetch JSON Data. \nPlease check your internet connection.")
+        }
     }
     
     func viewModel(_ viewModel: AlbumViewModel, didUpdateAlbumPageData data: [PhotoContent]) {
-        collectionView.reloadData()
-        self.loadingView.stopAnimating()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            self.loadingView.stopAnimating()
+        }
     }
     
     func showAlertMessage(with message: String) {
@@ -93,6 +114,7 @@ extension AlbumViewController: AlbumViewModelDelegate {
         let alert: UIAlertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
         let retry: UIAlertAction = UIAlertAction(title: "Retry", style: .default) { [weak self] (_) in
             self?.triggerToFetchData()
+            self?.dismiss(animated: true, completion: nil)
         }
         let cancel: UIAlertAction = UIAlertAction(title: "cancel", style: .default) { [weak self] (_) in
             self?.dismiss(animated: true, completion: nil)
@@ -100,7 +122,7 @@ extension AlbumViewController: AlbumViewModelDelegate {
         alert.addAction(retry)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
-    }
+   }
 }
 
 extension AlbumViewController: UICollectionViewDelegate {

@@ -26,51 +26,56 @@ class AlbumViewModel {
         }
     }
     
-    private(set) var connectionError = Error.self {
+    private(set) var connectionError: Error? {
         didSet {
-            delegate?.viewModel(self, didReceiveError: connectionError as! Error)
-        }
-    }
-    
-    
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSON"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSONError"), object: nil)
-    }
-    
-    @objc
-    func processingDataToArray(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            if let contents = userInfo["PhotoContents"] as? [PhotoContent] {
-                
-                self.photoContents = contents
-                var temps = [PhotoContent]()
-                for v in contents {
-                    temps.append(v)
-                }
-                self.photoContents = temps
+            if let error = connectionError {
+                delegate?.viewModel(self, didReceiveError: error)
             }
         }
     }
     
-    @objc
-    func failedToGetJSON(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            if let error = userInfo["ConnectionError"] as? Error {
-                self.connectionError = error as! Error.Protocol
-            }
-        }
-    }
     
-    func getData() {
-        DataManager.shared.getAlbumJSON { (contents, error) in
-            if let contents: [PhotoContent] = contents {
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSON"), object: self, userInfo: ["PhotoContents": contents])
-            } else {
-                if let error: Error = error {
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSONError"), object: self, userInfo: ["ConnectionError": error])
-                }
+//    init() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSON"), object: nil)
+//
+//        NotificationCenter.default.addObserver(self, selector: #selector(processingDataToArray(_:)), name: NSNotification.Name(rawValue: "GetJSONError"), object: nil)
+//    }
+    
+//    @objc
+//    func processingDataToArray(_ notification: Notification) {
+//        if let userInfo = notification.userInfo {
+//            if let contents = userInfo["PhotoContents"] as? [PhotoContent] {
+//
+//                self.photoContents = contents
+//                var temps = [PhotoContent]()
+//                for v in contents {
+//                    temps.append(v)
+//                }
+//                self.photoContents = temps
+//            }
+//        }
+//    }
+    
+//    @objc
+//    func failedToGetJSON(_ notification: Notification) {
+//        if let userInfo = notification.userInfo {
+//            if let error = userInfo["ConnectionError"] as? Error {
+//                self.connectionError = error as! Error.Protocol
+//            }
+//        }
+//    }
+//
+    func getData(_ completion: ((Result<[PhotoContent], Error>) -> Void)?) {
+        DataManager.shared.getAlbumJSON { [weak self] (result) in
+            switch result {
+            case .failure(let error):
+                self?.connectionError = error
+                completion?(.failure(error))
+//                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSONError"), object: self, userInfo: ["ConnectionError": error])
+            case .success(let photoContents):
+                self?.photoContents = photoContents
+                completion?(.success(photoContents))
+//                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "GetJSON"), object: self, userInfo: ["PhotoContents": photoContents])
             }
         }
     }
