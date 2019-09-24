@@ -13,6 +13,7 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var idLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     var task: URLSessionTask?
     
     
@@ -26,6 +27,7 @@ class CollectionViewCell: UICollectionViewCell {
     
     
     func loadImage(with url: URL) {
+        loadingIndicator.startAnimating()
         image.image = nil
         if let task: URLSessionTask = task {
             task.cancel()
@@ -38,6 +40,7 @@ class CollectionViewCell: UICollectionViewCell {
             let image: UIImage? = UIImage(data: data)
             DispatchQueue.main.async {
                 self.image.image = image
+                self.loadingIndicator.stopAnimating()
             }
         }
         task?.resume()

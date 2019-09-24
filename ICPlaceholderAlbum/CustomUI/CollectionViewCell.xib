@@ -35,9 +35,13 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="bAM-dK-zib">
+                        <rect key="frame" x="50" y="50" width="20" height="20"/>
+                    </activityIndicatorView>
                 </subviews>
             </view>
             <constraints>
+                <constraint firstItem="bAM-dK-zib" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="1L0-BR-ud8"/>
                 <constraint firstAttribute="trailing" secondItem="aLj-Mo-Vtl" secondAttribute="trailing" id="4jN-Yf-htd"/>
                 <constraint firstItem="276-F7-aU6" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="5kz-n2-O9L"/>
                 <constraint firstAttribute="bottom" secondItem="YBg-y1-BSD" secondAttribute="bottom" id="QaG-7D-IEf"/>
@@ -46,6 +50,7 @@
                 <constraint firstItem="276-F7-aU6" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="30" id="XrK-Lb-weH"/>
                 <constraint firstItem="aLj-Mo-Vtl" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="ZCm-GT-mJp"/>
                 <constraint firstItem="YBg-y1-BSD" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="fp2-oc-GXz"/>
+                <constraint firstItem="bAM-dK-zib" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="jAT-g0-UBp"/>
                 <constraint firstAttribute="trailing" secondItem="YBg-y1-BSD" secondAttribute="trailing" id="jeB-5u-IbN"/>
                 <constraint firstItem="aLj-Mo-Vtl" firstAttribute="top" secondItem="276-F7-aU6" secondAttribute="bottom" constant="15" id="xs6-0H-0xk"/>
             </constraints>
@@ -54,6 +59,7 @@
             <connections>
                 <outlet property="idLabel" destination="276-F7-aU6" id="lDu-uh-rbE"/>
                 <outlet property="image" destination="YBg-y1-BSD" id="kdz-u3-Aa0"/>
+                <outlet property="loadingIndicator" destination="bAM-dK-zib" id="bgy-Pk-KHD"/>
                 <outlet property="titleLabel" destination="aLj-Mo-Vtl" id="lQ4-2L-4fX"/>
             </connections>
             <point key="canvasLocation" x="188.40579710144928" y="118.86160714285714"/>

@@ -36,6 +36,6 @@ class HomePageViewController: UIViewController {
         
         let albumViewController = AlbumViewController()
         
-        self.navigationController?.pushViewController(albumViewController, animated: true)
+        navigationController?.pushViewController(albumViewController, animated: true)
     }
 }

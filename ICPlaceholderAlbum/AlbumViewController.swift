@@ -89,7 +89,7 @@ class AlbumViewController: UIViewController {
                 }
             }
         }
-//        self.viewModel.delegate = self
+        self.viewModel.delegate = self
     }
     
 }
@@ -118,6 +118,7 @@ extension AlbumViewController: AlbumViewModelDelegate {
         }
         let cancel: UIAlertAction = UIAlertAction(title: "cancel", style: .default) { [weak self] (_) in
             self?.dismiss(animated: true, completion: nil)
+            self?.navigationController?.popToRootViewController(animated: true)
         }
         alert.addAction(retry)
         alert.addAction(cancel)
