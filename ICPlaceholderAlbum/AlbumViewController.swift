@@ -114,10 +114,8 @@ extension AlbumViewController: AlbumViewModelDelegate {
         let alert: UIAlertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
         let retry: UIAlertAction = UIAlertAction(title: "Retry", style: .default) { [weak self] (_) in
             self?.triggerToFetchData()
-            self?.dismiss(animated: true, completion: nil)
         }
         let cancel: UIAlertAction = UIAlertAction(title: "cancel", style: .default) { [weak self] (_) in
-            self?.dismiss(animated: true, completion: nil)
             self?.navigationController?.popToRootViewController(animated: true)
         }
         alert.addAction(retry)
